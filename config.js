@@ -16,7 +16,7 @@ function buildAuthQuery() {
 function getHeaders(data = {}, headers = {}, ContentLength = null) {
 
     return {
-        'x-cv': '1',
+        'x-cv': '600',
         'Accept': '*/*',
         'Sec-Fetch-Site': 'cross-site',
         'Accept-Language': 'en-GB,en;q=0.9',
