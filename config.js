@@ -26,7 +26,7 @@ function getHeaders(data = {}, headers = {}, ContentLength = null) {
         'Origin': 'https://app.tapswap.club',
         'Content-Id': getRandom(12345, 98764321),
         'x-app': 'tapswap_server',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
         'Referer': 'https://app.tapswap.club/',
         'Connection': 'keep-alive',
         'Sec-Fetch-Dest': 'empty',
