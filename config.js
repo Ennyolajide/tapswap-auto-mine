@@ -24,7 +24,7 @@ function getHeaders(data = {}, headers = {}, ContentLength = null) {
         'Sec-Fetch-Mode': 'cors',
         'Content-Type': 'application/json',
         'Origin': 'https://app.tapswap.club',
-        'Content-Id': getRandom(12345, 98764321),
+        'Content-Id': getRandom(12345, 98764),
         'Content-Length': ContentLength || JSON.stringify(data).length,
         'x-app': 'tapswap_server',
         'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',

@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const axios = require('axios');
 const { urls, getHeaders } = require('./config');
+const { AbortController } = require('abort-controller');
 
 function setToken(token) {
     return `Bearer ${token}`;
@@ -10,15 +11,60 @@ function buildTapData(taps){
     return { "taps": taps, "time": Date.now() }
 }
 
-function tap(token, taps, maxTap) {
-    const data = buildTapData(taps);
-    return axios.post(urls.tap, data, { headers: getHeaders(data, { Authorization: setToken(token) }) }).then((res) => {
-        const { player } = res.data;
-        player ? logTap(taps, player) : exitProcess();
-        (player && player.energy <= maxTap) ? exitProcess() : false;
-    }).catch((error) => {
-        logError(error);
-    });
+// async function tap(token, taps, maxTap) {
+//     const data = buildTapData(parseInt(taps));
+//     return axios.post(urls.tap, data, { headers: getHeaders(data, { Authorization: setToken(token) }) }).then((res) => {
+//         const { player } = res.data;
+//         player ? logTap(taps, player) : exitProcess();
+//         (player && player.energy <= maxTap) ? exitProcess() : false;
+//     }).catch((error) => {
+//         if (error.code === 'ECONNRESET') {
+//             console.log('Server Reject Request');
+//             tap(token, taps, maxTap);
+//         }else{
+//             logError(error);
+//         }
+//     });
+// }
+
+async function tap(token, taps, maxTap) {
+  const data = buildTapData(parseInt(taps));
+  let retries = 3; // adjust the number of retries as needed
+  let delay = 500; // adjust the delay between retries as needed
+
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), 30000); // 30 seconds timeout
+
+  while (retries > 0) {
+    try {
+      const response = await axios.post(urls.tap, data, {
+        headers: getHeaders(data, { Authorization: setToken(token) }),
+        signal: abortController.signal,
+      });
+      const { player } = response.data;
+      logTap(taps, player);
+      if (player && player.energy <= maxTap) {
+        exitProcess();
+      }
+      break; // exit the loop on success
+    } catch (error) {
+      if (error.code === 'ECONNRESET') {
+        console.log('Server Reject Request');
+      } else if (error.name === 'AbortError') {
+        console.log('Request cancelled due to timeout');
+      } else {
+        retries--;
+        console.log(`Error: ${error.message}. Retries left: ${retries}`);
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  if (retries === 0) {
+    logError(new Error('Maximum retries reached'));
+  }
+
+  clearTimeout(timeoutId);
 }
 
 function logInfo(obj) {

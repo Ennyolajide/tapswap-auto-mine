@@ -20,7 +20,7 @@ axios.post(urls.login, data, { headers: getHeaders(data) })
         const token = access_token ?? null;
         (token || player) ? logInfo(player) : exitProcess;
 
-        function handleTap() {
+        async function handleTap() {
             token ? tap(token, taps(env), maxTap) : exitProcess;
             token ? setTimeout(handleTap, interval(env)) : exitProcess;
         }
